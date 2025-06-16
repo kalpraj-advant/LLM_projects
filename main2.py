@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 
-API_KEY = "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"
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 
 app = FastAPI()
