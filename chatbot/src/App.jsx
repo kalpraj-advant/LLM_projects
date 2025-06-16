@@ -21,10 +21,7 @@ function App() {
   
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }])
     } catch (error) {
-      console.error('Error:', error)
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, there was an error processing your request.' }])
-    } finally {
-      setIsLoading(false)
+      console.error(error)
     }
   }
 
@@ -32,14 +29,7 @@ function App() {
     <div className="max-w-3xl mx-auto p-4 h-screen flex flex-col">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`p-3 rounded-lg max-w-[70%] break-words ${
-              message.role === 'user'
-                ? 'bg-blue-200 text-gray-800 ml-auto'
-                : 'bg-gray-100 text-gray-800'
-            }`}
-          >
+          <div key={index} className={`p-3 rounded-lg max-w-[70%] break-words ${ message.role === 'user' ? 'bg-blue-200 text-gray-800 ml-auto' : 'bg-gray-100 text-gray-800' }`}>
             {message.content}
           </div>
         ))}
