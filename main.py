@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
+import json
 
 app = FastAPI()
 
@@ -13,20 +14,32 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
+
 OLLAMA_API = "http://localhost:11434/api/chat"
 model = "llama3.2"
 
-system_prompt = (
-    "You are a health assistant. "
-    "Only answer questions related to health, fitness, medicine, mental wellness, or nutrition."
-    "If a question is not related to health, reply: 'Sorry, I can only answer health-related questions.'"
-)
+ticket_prices = {
+    "london": "$799",
+    "paris": "$899",
+    "tokyo": "$1400",
+    "berlin": "$499"
+}
 
-# system_prompt = (
-#     "You are a mathematics assistant. "
-#     "Only answer questions related to mathematics. "
-#     "If a question is not about math, reply: 'Sorry, I can only answer math-related questions.'"
-# )
+flight_times = {
+    "london": "10:00 to 18:00",
+    "paris": "12:00 to 20:00",
+    "tokyo": "20:00 to 04:00",
+    "berlin": "06:00 to 14:00"
+}
+
+
+system_prompt = (
+    "You are a helpful assistant for an Airline called FlightAI. "
+    "Give short, courteous answers, no more than 1 sentence. "
+    "Always be accurate. If you don't know the answer, say so. "
+    f"Here are the ticket prices: {json.dumps(ticket_prices)}. "
+    f"And here are the flight times: {json.dumps(flight_times)}."
+)
 
 class ChatMessage(BaseModel):
     message: str
@@ -38,7 +51,7 @@ async def chat(message: ChatMessage):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": message.message}
         ]
-        
+
         response = requests.post(
             OLLAMA_API,
             json={
@@ -47,9 +60,10 @@ async def chat(message: ChatMessage):
                 "stream": False
             }
         )
-        
+
         reply = response.json()['message']['content']
         return {"response": reply}
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
